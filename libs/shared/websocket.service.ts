@@ -1,6 +1,6 @@
 import { Injectable, inject, OnDestroy } from '@angular/core';
-import { Subject, WebSocketSubject, webSocket } from 'rxjs/webSocket';
-import { Observable, EMPTY, timer } from 'rxjs';
+import { WebSocketSubject, webSocket } from 'rxjs/webSocket';
+import { Subject, Observable, EMPTY, timer } from 'rxjs';
 import { retryWhen, tap, delayWhen, catchError } from 'rxjs/operators';
 import { GameStateService } from './game-state.service';
 import type { InboundMessage, OutboundMessage, Action } from './protocol';
