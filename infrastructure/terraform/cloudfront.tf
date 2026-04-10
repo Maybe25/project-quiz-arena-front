@@ -1,3 +1,27 @@
+# ── CORS Response Headers Policy ─────────────────────────────────────────────
+# Los MFEs se cargan cross-origin desde el shell. Sin CORS el browser bloquea
+# los dynamic import() y fetch() de remoteEntry.json entre dominios CloudFront.
+
+resource "aws_cloudfront_response_headers_policy" "cors" {
+  name    = "${var.project}-cors-${var.env}"
+  comment = "CORS para micro-frontends de ${var.project}"
+
+  cors_config {
+    access_control_allow_credentials = false
+
+    access_control_allow_headers {
+      items = ["*"]
+    }
+    access_control_allow_methods {
+      items = ["GET", "HEAD", "OPTIONS"]
+    }
+    access_control_allow_origins {
+      items = ["*"]
+    }
+    origin_override = true
+  }
+}
+
 # ── CloudFront distributions — sin dominio propio, HTTPS gratis ──────────────
 #
 # Cada MFE tiene su distribución independiente:
@@ -28,11 +52,12 @@ resource "aws_cloudfront_distribution" "mfe" {
 
   # Cache default: 1 hora para assets normales
   default_cache_behavior {
-    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
-    cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "s3-${each.key}"
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods              = ["GET", "HEAD", "OPTIONS"]
+    cached_methods               = ["GET", "HEAD"]
+    target_origin_id             = "s3-${each.key}"
+    compress                     = true
+    viewer_protocol_policy       = "redirect-to-https"
+    response_headers_policy_id   = aws_cloudfront_response_headers_policy.cors.id
 
     forwarded_values {
       query_string = false
@@ -46,12 +71,13 @@ resource "aws_cloudfront_distribution" "mfe" {
 
   # index.html — sin cache (crítico para actualizaciones de PWA)
   ordered_cache_behavior {
-    path_pattern           = "/index.html"
-    allowed_methods        = ["GET", "HEAD"]
-    cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "s3-${each.key}"
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
+    path_pattern                 = "/index.html"
+    allowed_methods              = ["GET", "HEAD"]
+    cached_methods               = ["GET", "HEAD"]
+    target_origin_id             = "s3-${each.key}"
+    compress                     = true
+    viewer_protocol_policy       = "redirect-to-https"
+    response_headers_policy_id   = aws_cloudfront_response_headers_policy.cors.id
 
     forwarded_values {
       query_string = false
@@ -65,12 +91,13 @@ resource "aws_cloudfront_distribution" "mfe" {
 
   # *.json sin cache — federation manifest y ngsw.json deben estar siempre frescos
   ordered_cache_behavior {
-    path_pattern           = "/*.json"
-    allowed_methods        = ["GET", "HEAD"]
-    cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "s3-${each.key}"
-    compress               = true
-    viewer_protocol_policy = "redirect-to-https"
+    path_pattern                 = "/*.json"
+    allowed_methods              = ["GET", "HEAD"]
+    cached_methods               = ["GET", "HEAD"]
+    target_origin_id             = "s3-${each.key}"
+    compress                     = true
+    viewer_protocol_policy       = "redirect-to-https"
+    response_headers_policy_id   = aws_cloudfront_response_headers_policy.cors.id
 
     forwarded_values {
       query_string = false
