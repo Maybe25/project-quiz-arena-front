@@ -66,11 +66,7 @@
 
         @for (entry of rest(); track entry.playerId; let i = $index) {
           <div class="flex items-center gap-4 px-5 py-4 border-b transition-colors"
-            style="border-color:rgba(255,255,255,0.05)"
-            [style]="isMe(entry)
-              ? 'background:rgba(245,158,11,0.07);border-left:2px solid rgba(245,158,11,0.5)'
-              : 'border-left:2px solid transparent'"
-            [class.hover:bg-white/2]="!isMe(entry)">
+            [style]="'border-color:rgba(255,255,255,0.05);' + (isMe(entry) ? 'background:rgba(245,158,11,0.07);border-left:2px solid rgba(245,158,11,0.5)' : 'border-left:2px solid transparent')">
             <!-- Rank -->
             <span class="text-slate-500 text-sm w-8 text-center">{{ i + 4 }}</span>
             <!-- Nombre + barra -->
