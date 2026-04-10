@@ -24,20 +24,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
-          cache-dependency-path: project-websocket-frontend/package-lock.json
 
       - name: Install dependencies
-        working-directory: project-websocket-frontend
         run: npm ci
 
       - name: Build all MFEs
-        working-directory: project-websocket-frontend
         run: npm run build:all
         env:
           NODE_OPTIONS: --max-old-space-size=4096
 
       - name: Check bundle sizes
-        working-directory: project-websocket-frontend
         run: |
           echo "── Bundle sizes ──"
           du -sh dist/shell dist/mfe-home dist/mfe-game dist/mfe-leaderboard
