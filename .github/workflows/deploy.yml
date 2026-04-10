@@ -108,6 +108,12 @@ jobs:
           echo "✓ federation.manifest.prod.json generado:"
           cat projects/shell/src/federation.manifest.prod.json
 
+      - name: Inject WebSocket URL into environment.prod.ts
+        run: |
+          sed -i "s|__WS_URL__|${{ secrets.WS_URL }}|g" \
+            projects/shell/src/environments/environment.prod.ts
+          echo "✓ WS_URL inyectado en environment.prod.ts"
+
       - name: Build all MFEs
         run: npm run build:all
         env:
