@@ -80,7 +80,7 @@
               <!-- Score bar -->
               <div class="h-1 rounded-full" style="background:rgba(255,255,255,0.07);max-width:240px">
                 <div class="h-full rounded-full transition-all duration-500"
-                  [style.width]="(entry.totalScore / (state.leaderboard()[0]?.totalScore || 1)) * 100 + '%'"
+                  [style.width]="(entry.totalScore / (state.leaderboard()[0].totalScore || 1)) * 100 + '%'"
                   [style]="isMe(entry)
                     ? 'background:linear-gradient(90deg,#f59e0b,#fbbf24)'
                     : 'background:linear-gradient(90deg,#7c3aed,#06b6d4)'">

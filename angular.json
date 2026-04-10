@@ -53,8 +53,7 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "serviceWorker": "projects/shell/src/ngsw-config.json",
-              "ngswConfigPath": "projects/shell/src/ngsw-config.json"
+              "serviceWorker": "projects/shell/src/ngsw-config.json"
             },
             "development": {
               "optimization": false,
