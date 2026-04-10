@@ -27,6 +27,10 @@ export class GameComponent implements OnInit, OnDestroy {
   readonly letters = OPTION_LETTERS;
   readonly optClasses = OPTION_CLASSES;
 
+  range(n: number): number[] {
+    return Array.from({ length: n }, (_, i) => i);
+  }
+
   readonly showResult = signal(false);
   private sub!: Subscription;
 

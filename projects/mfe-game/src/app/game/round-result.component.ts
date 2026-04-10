@@ -76,7 +76,7 @@ export class RoundResultComponent implements OnInit {
   @Input({ required: true }) result!: RoundEndPayload;
   @Input() myAnswer: number | null = null;
 
-  readonly medals = ['🥇', '🥈', '🥉', '4.', '5.'];
+  readonly medals: (string | undefined)[] = ['🥇', '🥈', '🥉', '4.', '5.'];
 
   readonly isCorrect = computed(() =>
     this.myAnswer !== null && this.myAnswer === this.result.correctAnswer
