@@ -141,44 +141,44 @@ jobs:
 
       - name: Deploy shell
         run: |
-          aws s3 sync dist/shell/ s3://${{ needs.infra.outputs.shell_bucket }}/ \
+          aws s3 sync dist/shell/browser/ s3://${{ needs.infra.outputs.shell_bucket }}/ \
             --exclude "*.json" --exclude "index.html" --exclude "ngsw*" \
             --cache-control "public,max-age=31536000,immutable" \
             --delete --only-show-errors
-          aws s3 sync dist/shell/ s3://${{ needs.infra.outputs.shell_bucket }}/ \
+          aws s3 sync dist/shell/browser/ s3://${{ needs.infra.outputs.shell_bucket }}/ \
             --exclude "*" --include "*.json" --include "index.html" --include "ngsw*" \
             --cache-control "no-cache,no-store,must-revalidate" \
             --only-show-errors
 
       - name: Deploy mfe-home
         run: |
-          aws s3 sync dist/mfe-home/ s3://${{ needs.infra.outputs.home_bucket }}/ \
+          aws s3 sync dist/mfe-home/browser/ s3://${{ needs.infra.outputs.home_bucket }}/ \
             --exclude "*.json" \
             --cache-control "public,max-age=31536000,immutable" \
             --delete --only-show-errors
-          aws s3 sync dist/mfe-home/ s3://${{ needs.infra.outputs.home_bucket }}/ \
+          aws s3 sync dist/mfe-home/browser/ s3://${{ needs.infra.outputs.home_bucket }}/ \
             --exclude "*" --include "*.json" \
             --cache-control "no-cache,no-store,must-revalidate" \
             --only-show-errors
 
       - name: Deploy mfe-game
         run: |
-          aws s3 sync dist/mfe-game/ s3://${{ needs.infra.outputs.game_bucket }}/ \
+          aws s3 sync dist/mfe-game/browser/ s3://${{ needs.infra.outputs.game_bucket }}/ \
             --exclude "*.json" \
             --cache-control "public,max-age=31536000,immutable" \
             --delete --only-show-errors
-          aws s3 sync dist/mfe-game/ s3://${{ needs.infra.outputs.game_bucket }}/ \
+          aws s3 sync dist/mfe-game/browser/ s3://${{ needs.infra.outputs.game_bucket }}/ \
             --exclude "*" --include "*.json" \
             --cache-control "no-cache,no-store,must-revalidate" \
             --only-show-errors
 
       - name: Deploy mfe-leaderboard
         run: |
-          aws s3 sync dist/mfe-leaderboard/ s3://${{ needs.infra.outputs.lb_bucket }}/ \
+          aws s3 sync dist/mfe-leaderboard/browser/ s3://${{ needs.infra.outputs.lb_bucket }}/ \
             --exclude "*.json" \
             --cache-control "public,max-age=31536000,immutable" \
             --delete --only-show-errors
-          aws s3 sync dist/mfe-leaderboard/ s3://${{ needs.infra.outputs.lb_bucket }}/ \
+          aws s3 sync dist/mfe-leaderboard/browser/ s3://${{ needs.infra.outputs.lb_bucket }}/ \
             --exclude "*" --include "*.json" \
             --cache-control "no-cache,no-store,must-revalidate" \
             --only-show-errors

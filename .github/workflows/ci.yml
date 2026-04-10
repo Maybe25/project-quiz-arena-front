@@ -35,4 +35,4 @@ jobs:
       - name: Check bundle sizes
         run: |
           echo "── Bundle sizes ──"
-          du -sh dist/shell dist/mfe-home dist/mfe-game dist/mfe-leaderboard
+          du -sh dist/shell/browser dist/mfe-home/browser dist/mfe-game/browser dist/mfe-leaderboard/browser
