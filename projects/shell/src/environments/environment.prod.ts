@@ -1,7 +1,5 @@
 export const environment = {
   production: true,
-  // En producción, WSS va por el mismo dominio (CloudFront → API Gateway)
-  wsUrl: 'wss://api.quizarena.tudominio.com/dev',
-  // En producción, los MFEs están en sus propios CloudFront distributions
+  wsUrl: 'wss://x8p6b9ka44.execute-api.us-east-1.amazonaws.com/dev',
   federationManifest: '/federation.manifest.prod.json',
 };

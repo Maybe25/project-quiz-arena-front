@@ -14,21 +14,33 @@ import { loadRemoteModule } from '@angular-architects/native-federation';
 export const routes: Routes = [
   {
     path: '',
-    // Carga el componente Home desde mfe-home (puerto 4201)
     loadComponent: () =>
-      loadRemoteModule('mfeHome', './HomeComponent').then(m => m.HomeComponent),
+      loadRemoteModule('mfeHome', './HomeComponent')
+        .then(m => m.HomeComponent)
+        .catch(err => {
+          console.error('[Shell] Error cargando mfe-home:', err);
+          return import('./fallback.component').then(m => m.FallbackComponent);
+        }),
   },
   {
     path: 'game',
-    // Carga las rutas hijas de mfe-game (lobby, play, result)
     loadChildren: () =>
-      loadRemoteModule('mfeGame', './GameRoutes').then(m => m.GAME_ROUTES),
+      loadRemoteModule('mfeGame', './GameRoutes')
+        .then(m => m.GAME_ROUTES)
+        .catch(err => {
+          console.error('[Shell] Error cargando mfe-game:', err);
+          return [];
+        }),
   },
   {
     path: 'leaderboard',
-    // Carga el componente Leaderboard desde mfe-leaderboard (puerto 4203)
     loadComponent: () =>
-      loadRemoteModule('mfeLeaderboard', './LeaderboardComponent').then(m => m.LeaderboardComponent),
+      loadRemoteModule('mfeLeaderboard', './LeaderboardComponent')
+        .then(m => m.LeaderboardComponent)
+        .catch(err => {
+          console.error('[Shell] Error cargando mfe-leaderboard:', err);
+          return import('./fallback.component').then(m => m.FallbackComponent);
+        }),
   },
   {
     path: '**',
