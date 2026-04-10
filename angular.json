@@ -3,7 +3,6 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-
     "shell": {
       "projectType": "application",
       "root": "projects/shell",
@@ -18,10 +17,14 @@
             "verbose": false
           },
           "configurations": {
-            "production": { "target": "shell:_build:production" },
-            "development": { "target": "shell:_build:development" }
+            "production": {
+              "target": "shell:_build:production"
+            },
+            "development": {
+              "target": "shell:_build:development"
+            }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "production"
         },
         "_build": {
           "builder": "@angular-devkit/build-angular:application",
@@ -29,15 +32,20 @@
             "outputPath": "dist/shell",
             "index": "projects/shell/src/index.html",
             "browser": "projects/shell/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "projects/shell/tsconfig.app.json",
             "assets": [
               "projects/shell/src/favicon.ico",
               "projects/shell/src/assets",
               "projects/shell/src/federation.manifest.json",
-              "projects/shell/src/manifest.webmanifest"
+              "projects/shell/src/manifest.webmanifest",
+              "projects/shell/src/federation.manifest.prod.json"
             ],
-            "styles": ["projects/shell/src/styles.css"],
+            "styles": [
+              "projects/shell/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -48,7 +56,10 @@
               "serviceWorker": "projects/shell/src/ngsw-config.json",
               "ngswConfigPath": "projects/shell/src/ngsw-config.json"
             },
-            "development": { "optimization": false, "sourceMap": true }
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
           },
           "defaultConfiguration": "production"
         },
@@ -64,7 +75,6 @@
         }
       }
     },
-
     "mfe-home": {
       "projectType": "application",
       "root": "projects/mfe-home",
@@ -79,10 +89,14 @@
             "verbose": false
           },
           "configurations": {
-            "production": { "target": "mfe-home:_build:production" },
-            "development": { "target": "mfe-home:_build:development" }
+            "production": {
+              "target": "mfe-home:_build:production"
+            },
+            "development": {
+              "target": "mfe-home:_build:development"
+            }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "production"
         },
         "_build": {
           "builder": "@angular-devkit/build-angular:application",
@@ -90,15 +104,29 @@
             "outputPath": "dist/mfe-home",
             "index": "projects/mfe-home/src/index.html",
             "browser": "projects/mfe-home/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "projects/mfe-home/tsconfig.app.json",
-            "assets": ["projects/mfe-home/src/favicon.ico", "projects/mfe-home/src/assets"],
-            "styles": ["projects/mfe-home/src/styles.css"],
+            "assets": [
+              "projects/mfe-home/src/favicon.ico",
+              "projects/mfe-home/src/assets"
+            ],
+            "styles": [
+              "projects/mfe-home/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
-            "production": { "optimization": true, "outputHashing": "all", "sourceMap": false },
-            "development": { "optimization": false, "sourceMap": true }
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
           },
           "defaultConfiguration": "production"
         },
@@ -114,7 +142,6 @@
         }
       }
     },
-
     "mfe-game": {
       "projectType": "application",
       "root": "projects/mfe-game",
@@ -129,10 +156,14 @@
             "verbose": false
           },
           "configurations": {
-            "production": { "target": "mfe-game:_build:production" },
-            "development": { "target": "mfe-game:_build:development" }
+            "production": {
+              "target": "mfe-game:_build:production"
+            },
+            "development": {
+              "target": "mfe-game:_build:development"
+            }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "production"
         },
         "_build": {
           "builder": "@angular-devkit/build-angular:application",
@@ -140,15 +171,28 @@
             "outputPath": "dist/mfe-game",
             "index": "projects/mfe-game/src/index.html",
             "browser": "projects/mfe-game/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "projects/mfe-game/tsconfig.app.json",
-            "assets": ["projects/mfe-game/src/assets"],
-            "styles": ["projects/mfe-game/src/styles.css"],
+            "assets": [
+              "projects/mfe-game/src/assets"
+            ],
+            "styles": [
+              "projects/mfe-game/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
-            "production": { "optimization": true, "outputHashing": "all", "sourceMap": false },
-            "development": { "optimization": false, "sourceMap": true }
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
           },
           "defaultConfiguration": "production"
         },
@@ -164,7 +208,6 @@
         }
       }
     },
-
     "mfe-leaderboard": {
       "projectType": "application",
       "root": "projects/mfe-leaderboard",
@@ -179,10 +222,14 @@
             "verbose": false
           },
           "configurations": {
-            "production": { "target": "mfe-leaderboard:_build:production" },
-            "development": { "target": "mfe-leaderboard:_build:development" }
+            "production": {
+              "target": "mfe-leaderboard:_build:production"
+            },
+            "development": {
+              "target": "mfe-leaderboard:_build:development"
+            }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "production"
         },
         "_build": {
           "builder": "@angular-devkit/build-angular:application",
@@ -190,15 +237,28 @@
             "outputPath": "dist/mfe-leaderboard",
             "index": "projects/mfe-leaderboard/src/index.html",
             "browser": "projects/mfe-leaderboard/src/main.ts",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "tsConfig": "projects/mfe-leaderboard/tsconfig.app.json",
-            "assets": ["projects/mfe-leaderboard/src/assets"],
-            "styles": ["projects/mfe-leaderboard/src/styles.css"],
+            "assets": [
+              "projects/mfe-leaderboard/src/assets"
+            ],
+            "styles": [
+              "projects/mfe-leaderboard/src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
-            "production": { "optimization": true, "outputHashing": "all", "sourceMap": false },
-            "development": { "optimization": false, "sourceMap": true }
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true
+            }
           },
           "defaultConfiguration": "production"
         },
@@ -214,6 +274,5 @@
         }
       }
     }
-
   }
 }
