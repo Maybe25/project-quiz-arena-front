@@ -1,0 +1,94 @@
+<!-- ── Fondo ── -->
+<div class="relative min-h-screen flex flex-col items-center justify-center p-6 overflow-hidden"
+  style="background: radial-gradient(ellipse at 50% -5%, oklch(14% 0.055 290) 0%, oklch(8% 0.02 285) 65%)">
+
+  <!-- Orbes de luz de fondo -->
+  <div class="glow-orb" style="width:500px;height:500px;left:-8%;top:-12%;background:oklch(45% 0.28 295)"></div>
+  <div class="glow-orb" style="width:350px;height:350px;right:0%;top:15%;background:oklch(70% 0.18 200);opacity:.2"></div>
+  <div class="glow-orb" style="width:300px;height:300px;left:30%;bottom:-10%;background:oklch(45% 0.28 295);opacity:.15"></div>
+
+  <!-- ── Hero ── -->
+  <div class="text-center mb-10 relative z-10 animate-fade-in">
+    <h1 class="font-display font-bold grad-text leading-none mb-3"
+      style="font-size: clamp(56px, 10vw, 88px); letter-spacing: -0.02em">
+      ⬡ QUIZ<br>ARENA
+    </h1>
+    <p class="text-slate-400 text-lg" style="font-family:'Inter'">
+      Trivia multijugador en tiempo real
+    </p>
+  </div>
+
+  <!-- ── Card principal ── -->
+  <div class="glass-violet relative z-10 p-8 w-full max-w-md animate-scale-in"
+    style="border-radius:20px">
+
+    <!-- Apodo -->
+    <div class="mb-6">
+      <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2"
+        style="font-family:'Inter'">
+        👤 Tu apodo
+      </label>
+      <input class="qa-input px-4 py-3 text-base"
+        placeholder="Player-..."
+        [value]="username()"
+        (input)="username.set($any($event.target).value)"
+        maxlength="20" />
+    </div>
+
+    <!-- Crear sala -->
+    <button class="btn-primary w-full py-4 text-base mb-5"
+      [disabled]="!canCreate() || isLoading()"
+      (click)="createRoom()">
+      @if (isLoading()) {
+        <svg class="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/>
+        </svg>
+        Creando sala...
+      } @else {
+        ⚡ Crear sala nueva
+      }
+    </button>
+
+    <!-- Divider -->
+    <div class="flex items-center gap-3 mb-5">
+      <div class="flex-1 h-px" style="background:rgba(255,255,255,0.07)"></div>
+      <span class="text-xs text-slate-500" style="font-family:'Inter'">o únete con código</span>
+      <div class="flex-1 h-px" style="background:rgba(255,255,255,0.07)"></div>
+    </div>
+
+    <!-- Código de sala -->
+    <div class="mb-4">
+      <label class="block text-xs text-slate-400 uppercase tracking-widest mb-2"
+        style="font-family:'Inter'">
+        🔑 Código de sala
+      </label>
+      <input class="qa-input px-4 py-3 text-center text-2xl font-mono uppercase"
+        placeholder="ABCDEF"
+        [value]="roomCode()"
+        (input)="onRoomCodeInput($any($event.target).value)"
+        maxlength="6"
+        style="font-family:'JetBrains Mono';letter-spacing:0.4em" />
+    </div>
+
+    <!-- Unirse -->
+    <button class="btn-ghost w-full py-3 text-base mb-4"
+      [disabled]="!canJoin() || isLoading()"
+      (click)="joinRoom()">
+      → Unirse a la sala
+    </button>
+
+    <!-- Error inline -->
+    @if (errorMsg()) {
+      <p class="text-rose-400 text-sm text-center animate-fade-in"
+        style="font-family:'Inter'">
+        ⚠ {{ errorMsg() }}
+      </p>
+    }
+  </div>
+
+  <!-- Leaderboard CTA -->
+  <button class="btn-ghost-amber px-6 py-3 mt-6 relative z-10 text-sm animate-fade-in"
+    (click)="goToLeaderboard()">
+    🏆 Ver Leaderboard Global
+  </button>
+</div>

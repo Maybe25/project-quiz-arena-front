@@ -1,0 +1,68 @@
+<div class="min-h-screen relative flex flex-col items-center justify-start px-6 py-10 overflow-hidden"
+  style="background: radial-gradient(ellipse at 50% 0%, oklch(12% 0.08 290) 0%, oklch(8% 0.02 285) 70%)">
+
+  <!-- Orbes decorativos dorados -->
+  <div class="glow-orb" style="width:500px;height:500px;left:20%;top:-20%;background:oklch(78% 0.18 75);opacity:.15"></div>
+  <div class="glow-orb" style="width:350px;height:350px;right:-5%;bottom:10%;background:oklch(45% 0.28 295);opacity:.2"></div>
+
+  <!-- Título -->
+  <h1 class="text-4xl font-bold mb-2 relative z-10 animate-scale-in"
+    style="font-family:'Space Grotesk';background:linear-gradient(135deg,#7c3aed,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+    🏆 ¡Partida Finalizada!
+  </h1>
+  <p class="text-slate-400 mb-10 relative z-10 animate-fade-in" style="font-family:'Inter'">¡Gran juego!</p>
+
+  <!-- ── Podio ── -->
+  <div class="relative z-10 flex items-end justify-center gap-4 mb-10 w-full max-w-lg animate-fade-in">
+    @for (idx of podiumOrder; track idx) {
+      @if (top3()[idx]) {
+        <div class="flex flex-col items-center flex-1"
+          [style]="idx === 0 ? 'transform:scale(1.05)' : ''">
+          <!-- Avatar / medalla -->
+          <span class="text-4xl mb-2">{{ medals[idx] }}</span>
+          <p class="text-xs text-slate-400 mb-1 text-center" style="font-family:'Inter'">
+            {{ top3()[idx].username }}
+          </p>
+          <p class="text-sm font-bold text-amber-400 mb-3" style="font-family:'JetBrains Mono'">
+            {{ top3()[idx].score.toLocaleString() }} pts
+          </p>
+          <!-- Pedestal -->
+          <div class="w-full flex items-end justify-center pb-3 rounded-t-xl border"
+            [style.height.px]="podiumHeights[podiumOrder.indexOf(idx)]"
+            [style]="idx === 0
+              ? 'background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.35);box-shadow:0 0 40px rgba(245,158,11,0.2)'
+              : 'background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.08)'">
+            <span class="text-slate-400 text-sm font-semibold" style="font-family:'Space Grotesk'">
+              {{ podiumOrder.indexOf(idx) === 0 ? '2do' : podiumOrder.indexOf(idx) === 1 ? '1er' : '3ro' }}
+            </span>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Resto de jugadores -->
+  @if (rest().length > 0) {
+    <div class="glass relative z-10 w-full max-w-md mb-8 overflow-hidden animate-fade-in">
+      @for (player of rest(); track player.playerId; let i = $index) {
+        <div class="flex items-center gap-4 px-5 py-3 border-b" style="border-color:rgba(255,255,255,0.06)">
+          <span class="text-slate-500 text-sm w-6">{{ i + 4 }}.</span>
+          <span class="flex-1 text-slate-300 text-sm" style="font-family:'Inter'">{{ player.username }}</span>
+          <span class="text-amber-400 text-sm font-semibold" style="font-family:'JetBrains Mono'">
+            {{ player.score.toLocaleString() }} pts
+          </span>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Acciones -->
+  <div class="relative z-10 flex gap-4 animate-fade-in">
+    <button class="btn-primary px-8 py-3 text-base" (click)="playAgain()">
+      🔄 Jugar de Nuevo
+    </button>
+    <button class="btn-ghost px-8 py-3 text-base" (click)="goHome()">
+      🏠 Inicio
+    </button>
+  </div>
+</div>

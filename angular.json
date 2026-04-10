@@ -1,0 +1,219 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+
+    "shell": {
+      "projectType": "application",
+      "root": "projects/shell",
+      "sourceRoot": "projects/shell/src",
+      "prefix": "qa-shell",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "shell:_build",
+            "federationConfig": "projects/shell/federation.config.js",
+            "verbose": false
+          },
+          "configurations": {
+            "production": { "target": "shell:_build:production" },
+            "development": { "target": "shell:_build:development" }
+          },
+          "defaultConfiguration": "development"
+        },
+        "_build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/shell",
+            "index": "projects/shell/src/index.html",
+            "browser": "projects/shell/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/shell/tsconfig.app.json",
+            "assets": [
+              "projects/shell/src/favicon.ico",
+              "projects/shell/src/assets",
+              "projects/shell/src/federation.manifest.json",
+              "projects/shell/src/manifest.webmanifest"
+            ],
+            "styles": ["projects/shell/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "serviceWorker": "projects/shell/src/ngsw-config.json",
+              "ngswConfigPath": "projects/shell/src/ngsw-config.json"
+            },
+            "development": { "optimization": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "shell:_build:development",
+            "federationConfig": "projects/shell/federation.config.js",
+            "verbose": false,
+            "dev": true,
+            "port": 4200
+          }
+        }
+      }
+    },
+
+    "mfe-home": {
+      "projectType": "application",
+      "root": "projects/mfe-home",
+      "sourceRoot": "projects/mfe-home/src",
+      "prefix": "qa-home",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "mfe-home:_build",
+            "federationConfig": "projects/mfe-home/federation.config.js",
+            "verbose": false
+          },
+          "configurations": {
+            "production": { "target": "mfe-home:_build:production" },
+            "development": { "target": "mfe-home:_build:development" }
+          },
+          "defaultConfiguration": "development"
+        },
+        "_build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/mfe-home",
+            "index": "projects/mfe-home/src/index.html",
+            "browser": "projects/mfe-home/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/mfe-home/tsconfig.app.json",
+            "assets": ["projects/mfe-home/src/favicon.ico", "projects/mfe-home/src/assets"],
+            "styles": ["projects/mfe-home/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": { "optimization": true, "outputHashing": "all", "sourceMap": false },
+            "development": { "optimization": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "mfe-home:_build:development",
+            "federationConfig": "projects/mfe-home/federation.config.js",
+            "verbose": false,
+            "dev": true,
+            "port": 4201
+          }
+        }
+      }
+    },
+
+    "mfe-game": {
+      "projectType": "application",
+      "root": "projects/mfe-game",
+      "sourceRoot": "projects/mfe-game/src",
+      "prefix": "qa-game",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "mfe-game:_build",
+            "federationConfig": "projects/mfe-game/federation.config.js",
+            "verbose": false
+          },
+          "configurations": {
+            "production": { "target": "mfe-game:_build:production" },
+            "development": { "target": "mfe-game:_build:development" }
+          },
+          "defaultConfiguration": "development"
+        },
+        "_build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/mfe-game",
+            "index": "projects/mfe-game/src/index.html",
+            "browser": "projects/mfe-game/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/mfe-game/tsconfig.app.json",
+            "assets": ["projects/mfe-game/src/assets"],
+            "styles": ["projects/mfe-game/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": { "optimization": true, "outputHashing": "all", "sourceMap": false },
+            "development": { "optimization": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "mfe-game:_build:development",
+            "federationConfig": "projects/mfe-game/federation.config.js",
+            "verbose": false,
+            "dev": true,
+            "port": 4202
+          }
+        }
+      }
+    },
+
+    "mfe-leaderboard": {
+      "projectType": "application",
+      "root": "projects/mfe-leaderboard",
+      "sourceRoot": "projects/mfe-leaderboard/src",
+      "prefix": "qa-lb",
+      "architect": {
+        "build": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "mfe-leaderboard:_build",
+            "federationConfig": "projects/mfe-leaderboard/federation.config.js",
+            "verbose": false
+          },
+          "configurations": {
+            "production": { "target": "mfe-leaderboard:_build:production" },
+            "development": { "target": "mfe-leaderboard:_build:development" }
+          },
+          "defaultConfiguration": "development"
+        },
+        "_build": {
+          "builder": "@angular-devkit/build-angular:application",
+          "options": {
+            "outputPath": "dist/mfe-leaderboard",
+            "index": "projects/mfe-leaderboard/src/index.html",
+            "browser": "projects/mfe-leaderboard/src/main.ts",
+            "polyfills": ["zone.js"],
+            "tsConfig": "projects/mfe-leaderboard/tsconfig.app.json",
+            "assets": ["projects/mfe-leaderboard/src/assets"],
+            "styles": ["projects/mfe-leaderboard/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": { "optimization": true, "outputHashing": "all", "sourceMap": false },
+            "development": { "optimization": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-architects/native-federation:build",
+          "options": {
+            "target": "mfe-leaderboard:_build:development",
+            "federationConfig": "projects/mfe-leaderboard/federation.config.js",
+            "verbose": false,
+            "dev": true,
+            "port": 4203
+          }
+        }
+      }
+    }
+
+  }
+}

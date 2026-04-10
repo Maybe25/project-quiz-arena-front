@@ -1,0 +1,123 @@
+<div class="min-h-screen relative" style="background:oklch(8% 0.02 285)">
+  <!-- Orbe decorativo cyan -->
+  <div class="glow-orb" style="width:450px;height:450px;right:-10%;top:-10%;background:oklch(70% 0.18 200)"></div>
+  <div class="glow-orb" style="width:300px;height:300px;left:-5%;bottom:10%;background:oklch(45% 0.28 295);opacity:.2"></div>
+
+  <!-- Nav -->
+  <nav class="relative z-10 flex items-center justify-between px-8 py-5 border-b"
+    style="border-color:rgba(255,255,255,0.06)">
+    <button class="btn-ghost px-4 py-2 text-sm" (click)="goBack()">← Volver</button>
+    <h1 class="text-lg font-semibold text-white" style="font-family:'Space Grotesk'">🏆 Leaderboard Global</h1>
+    <div style="width:100px"></div>
+  </nav>
+
+  <div class="relative z-10 max-w-2xl mx-auto px-6 py-8">
+
+    <!-- Loading state -->
+    @if (isLoading()) {
+      <div class="text-center py-20">
+        <div class="inline-flex items-center gap-3 text-slate-400" style="font-family:'Inter'">
+          <svg class="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/>
+          </svg>
+          Cargando rankings...
+        </div>
+      </div>
+    }
+
+    @if (!isLoading() && state.leaderboard().length === 0) {
+      <div class="text-center py-20 text-slate-500" style="font-family:'Inter'">
+        No hay datos de leaderboard todavía.
+      </div>
+    }
+
+    @if (!isLoading() && state.leaderboard().length > 0) {
+
+      <!-- Top 3 highlight -->
+      <div class="grid grid-cols-3 gap-3 mb-8 animate-fade-in">
+        @for (entry of top3(); track entry.playerId; let i = $index) {
+          <div class="glass p-5 text-center bg-gradient-to-b"
+            [class]="podiumBg[i]"
+            [class.ring-1]="i === 0"
+            [style]="i === 0 ? 'box-shadow:0 0 30px rgba(245,158,11,0.2);ring-color:rgba(245,158,11,0.4)' : ''">
+            <div class="text-3xl mb-2">{{ medals[i] }}</div>
+            <p class="text-xs text-slate-300 mb-1 truncate" style="font-family:'Inter'">{{ entry.username }}</p>
+            <p class="text-lg font-bold text-amber-400" style="font-family:'JetBrains Mono'">
+              {{ entry.totalScore.toLocaleString() }}
+            </p>
+            <p class="text-xs text-slate-500 mt-1" style="font-family:'Inter'">
+              {{ entry.wins }}W / {{ entry.gamesPlayed }}G
+            </p>
+          </div>
+        }
+      </div>
+
+      <!-- Tabla ranking completa -->
+      <div class="glass overflow-hidden animate-fade-in">
+        <!-- Header -->
+        <div class="px-5 py-3 border-b flex gap-4 text-xs text-slate-500 uppercase tracking-widest"
+          style="border-color:rgba(255,255,255,0.07);font-family:'Inter'">
+          <span class="w-8 text-center">#</span>
+          <span class="flex-1">Jugador</span>
+          <span class="w-24 text-right">Puntos</span>
+          <span class="w-20 text-center">Partidas</span>
+          <span class="w-14 text-center">Wins</span>
+        </div>
+
+        @for (entry of rest(); track entry.playerId; let i = $index) {
+          <div class="flex items-center gap-4 px-5 py-4 border-b transition-colors"
+            style="border-color:rgba(255,255,255,0.05)"
+            [style]="isMe(entry)
+              ? 'background:rgba(245,158,11,0.07);border-left:2px solid rgba(245,158,11,0.5)'
+              : 'border-left:2px solid transparent'"
+            [class.hover:bg-white/2]="!isMe(entry)">
+            <!-- Rank -->
+            <span class="text-slate-500 text-sm w-8 text-center">{{ i + 4 }}</span>
+            <!-- Nombre + barra -->
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium truncate mb-1.5"
+                [class]="isMe(entry) ? 'text-amber-300' : 'text-slate-200'"
+                style="font-family:'Inter'">
+                {{ entry.username }}
+                @if (isMe(entry)) { <span class="text-xs text-amber-500 ml-1">(Tú)</span> }
+              </p>
+              <!-- Score bar -->
+              <div class="h-1 rounded-full" style="background:rgba(255,255,255,0.07);max-width:240px">
+                <div class="h-full rounded-full transition-all duration-500"
+                  [style.width]="(entry.totalScore / (state.leaderboard()[0]?.totalScore || 1)) * 100 + '%'"
+                  [style]="isMe(entry)
+                    ? 'background:linear-gradient(90deg,#f59e0b,#fbbf24)'
+                    : 'background:linear-gradient(90deg,#7c3aed,#06b6d4)'">
+                </div>
+              </div>
+            </div>
+            <!-- Stats -->
+            <span class="text-sm font-semibold text-amber-400 w-24 text-right"
+              style="font-family:'JetBrains Mono'">
+              {{ entry.totalScore.toLocaleString() }}
+            </span>
+            <span class="text-sm text-slate-400 w-20 text-center" style="font-family:'Inter'">
+              {{ entry.gamesPlayed }}
+            </span>
+            <span class="text-sm text-slate-400 w-14 text-center" style="font-family:'Inter'">
+              {{ entry.wins }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <!-- Refresh -->
+      <div class="flex justify-center mt-6">
+        <button class="btn-ghost px-6 py-3 text-sm flex items-center gap-2"
+          (click)="loadLeaderboard()"
+          [disabled]="isLoading()">
+          <svg [class.animate-spin]="isLoading()" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          Actualizar rankings
+        </button>
+      </div>
+    }
+  </div>
+</div>

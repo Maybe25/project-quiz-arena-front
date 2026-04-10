@@ -1,0 +1,5 @@
+{
+  "mfeHome":        "https://home.quizarena.tudominio.com/remoteEntry.json",
+  "mfeGame":        "https://game.quizarena.tudominio.com/remoteEntry.json",
+  "mfeLeaderboard": "https://leaderboard.quizarena.tudominio.com/remoteEntry.json"
+}

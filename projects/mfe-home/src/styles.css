@@ -1,0 +1,3 @@
+/* El MFE importa los estilos globales del shell cuando se carga en él.
+   Cuando se desarrolla standalone, necesita sus propios estilos base. */
+@import '../../../projects/shell/src/styles.css';

@@ -1,0 +1,113 @@
+<div class="min-h-screen relative flex flex-col overflow-hidden"
+  style="background: radial-gradient(ellipse at 50% 30%, oklch(11% 0.04 285) 0%, oklch(8% 0.02 285) 70%)">
+
+  <div class="glow-orb" style="width:700px;height:700px;left:20%;top:-25%;background:oklch(14% 0.06 290);opacity:.7"></div>
+
+  <!-- ── Top bar: Ronda + Timer ── -->
+  <div class="relative z-10 px-6 pt-6 pb-3">
+    <div class="flex items-center justify-between mb-3">
+      <!-- Progreso de rondas -->
+      <div class="flex items-center gap-3">
+        <span class="text-sm text-slate-400" style="font-family:'Inter'">
+          Ronda {{ state.currentRound()?.roundNumber }} de {{ state.currentRound()?.totalRounds }}
+        </span>
+        <div class="flex gap-1.5">
+          @for (_ of [].constructor(state.currentRound()?.totalRounds ?? 5); track $index) {
+            <div class="w-2.5 h-2.5 rounded-full transition-all duration-300"
+              [class]="$index < (state.currentRound()?.roundNumber ?? 1) - 1
+                ? 'bg-cyan-500'
+                : $index === (state.currentRound()?.roundNumber ?? 1) - 1
+                ? 'bg-violet-500 shadow-[0_0_8px_rgba(124,58,237,0.7)]'
+                : 'bg-white/15'">
+            </div>
+          }
+        </div>
+      </div>
+      <!-- Score personal -->
+      <span class="text-sm font-semibold text-amber-400" style="font-family:'JetBrains Mono'">
+        {{ state.myScore().toLocaleString() }} pts
+      </span>
+    </div>
+
+    <!-- Timer bar -->
+    @if (state.currentRound()) {
+      <qa-timer-bar [timeLimitMs]="state.currentRound()!.timeLimitMs" />
+    }
+  </div>
+
+  <!-- ── Pregunta ── -->
+  <div class="relative z-10 px-6 py-4 flex justify-center">
+    <div class="glass p-8 w-full max-w-2xl text-center" style="border-color:rgba(255,255,255,0.10);border-radius:20px">
+      <p class="text-2xl font-semibold text-white leading-relaxed" style="font-family:'Space Grotesk'">
+        {{ state.currentRound()?.question?.text }}
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Opciones de respuesta ── -->
+  <div class="relative z-10 px-6 flex-1 flex flex-col justify-center">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mx-auto">
+      @for (option of state.currentRound()?.question?.options ?? []; track $index) {
+        <div class="opt-card"
+          [class]="optClasses[$index]"
+          [class.selected]="optionState($index) === 'selected'"
+          [class.correct]="optionState($index) === 'correct'"
+          [class.wrong]="optionState($index) === 'wrong'"
+          [class.expired]="optionState($index) === 'expired'"
+          [class.disabled]="state.selectedAnswer() !== null"
+          (click)="selectAnswer($index)">
+          <!-- Badge letra -->
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-white flex-shrink-0"
+            style="background:rgba(255,255,255,0.12);font-family:'Space Grotesk';font-size:18px">
+            {{ letters[$index] }}
+          </div>
+          <!-- Texto -->
+          <span class="text-white text-base font-medium flex-1" style="font-family:'Inter'">{{ option }}</span>
+          <!-- Check si seleccionada -->
+          @if (optionState($index) === 'selected') {
+            <span class="text-white text-lg">✓</span>
+          }
+          @if (optionState($index) === 'correct') {
+            <span class="text-emerald-300 text-lg">✓</span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Estado "respuesta enviada" -->
+    @if (state.selectedAnswer() !== null && !showResult()) {
+      <p class="text-center text-slate-400 text-sm mt-5 animate-fade-in" style="font-family:'Inter'">
+        Respuesta enviada — esperando a otros jugadores...
+      </p>
+    }
+  </div>
+
+  <!-- ── Mini scoreboard ── -->
+  <div class="relative z-10 px-6 pb-6">
+    <div class="glass flex gap-3 overflow-x-auto p-3" style="border-radius:14px">
+      @for (player of state.sortedPlayers().slice(0, 5); track player.playerId; let i = $index) {
+        <div class="flex items-center gap-2 px-4 py-2 rounded-xl flex-shrink-0 border"
+          [style]="player.playerId === state.room()?.hostPlayerId
+            ? 'background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.25)'
+            : 'background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.07)'">
+          <span>{{ player.playerId === state.room()?.hostPlayerId ? '👑' : '🟢' }}</span>
+          <div>
+            <p class="text-xs font-medium" style="font-family:'Inter'"
+              [class]="player.playerId === state.room()?.hostPlayerId ? 'text-amber-300' : 'text-slate-200'">
+              {{ player.username }}
+            </p>
+            <p class="text-xs font-semibold text-amber-400" style="font-family:'JetBrains Mono'">
+              {{ player.score.toLocaleString() }} pts
+            </p>
+          </div>
+          <span class="text-xs text-slate-500 ml-1">#{{ i + 1 }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ── Overlay resultado de ronda ── -->
+  @if (showResult() && state.roundResult()) {
+    <qa-round-result [result]="state.roundResult()!" [myAnswer]="state.selectedAnswer()" />
+  }
+</div>

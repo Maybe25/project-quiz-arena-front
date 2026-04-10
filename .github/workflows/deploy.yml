@@ -1,0 +1,228 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: write   # Para hacer commit del manifest actualizado
+  pull-requests: write
+
+env:
+  NODE_VERSION: "20"
+  TF_VERSION: "1.7.0"
+  AWS_REGION: "us-east-1"
+
+jobs:
+  # ── Job 1: Infraestructura Terraform ─────────────────────────────────────────
+  infra:
+    name: Terraform Infrastructure
+    runs-on: ubuntu-latest
+    outputs:
+      shell_url:   ${{ steps.outputs.outputs.shell_url }}
+      home_url:    ${{ steps.outputs.outputs.home_url }}
+      game_url:    ${{ steps.outputs.outputs.game_url }}
+      lb_url:      ${{ steps.outputs.outputs.lb_url }}
+      shell_cf:    ${{ steps.outputs.outputs.shell_cf }}
+      home_cf:     ${{ steps.outputs.outputs.home_cf }}
+      game_cf:     ${{ steps.outputs.outputs.game_cf }}
+      lb_cf:       ${{ steps.outputs.outputs.lb_cf }}
+      shell_bucket: ${{ steps.outputs.outputs.shell_bucket }}
+      home_bucket:  ${{ steps.outputs.outputs.home_bucket }}
+      game_bucket:  ${{ steps.outputs.outputs.game_bucket }}
+      lb_bucket:    ${{ steps.outputs.outputs.lb_bucket }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Terraform Init
+        working-directory: project-websocket-frontend/infrastructure/terraform
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: project-websocket-frontend/infrastructure/terraform
+        run: terraform apply -auto-approve
+
+      # Leer outputs de Terraform para usarlos en los jobs siguientes
+      - name: Read Terraform outputs
+        id: outputs
+        working-directory: project-websocket-frontend/infrastructure/terraform
+        run: |
+          DOMAINS=$(terraform output -json cloudfront_domains)
+          IDS=$(terraform output -json cloudfront_ids)
+          BUCKETS=$(terraform output -json s3_buckets)
+
+          echo "shell_url=$(echo $DOMAINS | jq -r '.shell')"           >> $GITHUB_OUTPUT
+          echo "home_url=$(echo $DOMAINS | jq -r '."mfe-home"')"       >> $GITHUB_OUTPUT
+          echo "game_url=$(echo $DOMAINS | jq -r '."mfe-game"')"       >> $GITHUB_OUTPUT
+          echo "lb_url=$(echo $DOMAINS | jq -r '."mfe-leaderboard"')"  >> $GITHUB_OUTPUT
+
+          echo "shell_cf=$(echo $IDS | jq -r '.shell')"                >> $GITHUB_OUTPUT
+          echo "home_cf=$(echo $IDS | jq -r '."mfe-home"')"            >> $GITHUB_OUTPUT
+          echo "game_cf=$(echo $IDS | jq -r '."mfe-game"')"            >> $GITHUB_OUTPUT
+          echo "lb_cf=$(echo $IDS | jq -r '."mfe-leaderboard"')"       >> $GITHUB_OUTPUT
+
+          echo "shell_bucket=$(echo $BUCKETS | jq -r '.shell')"        >> $GITHUB_OUTPUT
+          echo "home_bucket=$(echo $BUCKETS | jq -r '."mfe-home"')"    >> $GITHUB_OUTPUT
+          echo "game_bucket=$(echo $BUCKETS | jq -r '."mfe-game"')"    >> $GITHUB_OUTPUT
+          echo "lb_bucket=$(echo $BUCKETS | jq -r '."mfe-leaderboard"')" >> $GITHUB_OUTPUT
+
+  # ── Job 2: Build con URLs reales de CloudFront ───────────────────────────────
+  build:
+    name: Build MFEs
+    runs-on: ubuntu-latest
+    needs: infra
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: project-websocket-frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: project-websocket-frontend
+        run: npm ci
+
+      # Generar federation.manifest.prod.json con las URLs reales de CloudFront
+      - name: Generate production federation manifest
+        run: |
+          cat > project-websocket-frontend/projects/shell/src/federation.manifest.prod.json << EOF
+          {
+            "mfeHome":        "${{ needs.infra.outputs.home_url }}/remoteEntry.json",
+            "mfeGame":        "${{ needs.infra.outputs.game_url }}/remoteEntry.json",
+            "mfeLeaderboard": "${{ needs.infra.outputs.lb_url }}/remoteEntry.json"
+          }
+          EOF
+          echo "✓ federation.manifest.prod.json generado"
+          cat project-websocket-frontend/projects/shell/src/federation.manifest.prod.json
+
+      - name: Build all MFEs
+        working-directory: project-websocket-frontend
+        run: npm run build:all
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: project-websocket-frontend/dist/
+          retention-days: 1
+
+  # ── Job 3: Deploy a S3 + invalidar CloudFront ───────────────────────────────
+  deploy:
+    name: Deploy to S3
+    runs-on: ubuntu-latest
+    needs: [infra, build]
+
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: dist/
+
+      # Headers de cache:
+      #   Assets con hash (*.js, *.css) → immutable 1 año
+      #   index.html, *.json, ngsw*     → no-cache (actualizaciones inmediatas)
+
+      - name: Deploy shell
+        run: |
+          aws s3 sync dist/shell/ s3://${{ needs.infra.outputs.shell_bucket }}/ \
+            --exclude "*.json" --exclude "index.html" --exclude "ngsw*" \
+            --cache-control "public,max-age=31536000,immutable" \
+            --delete --only-show-errors
+          aws s3 sync dist/shell/ s3://${{ needs.infra.outputs.shell_bucket }}/ \
+            --exclude "*" --include "*.json" --include "index.html" --include "ngsw*" \
+            --cache-control "no-cache,no-store,must-revalidate" \
+            --only-show-errors
+          echo "✓ shell → s3://${{ needs.infra.outputs.shell_bucket }}"
+
+      - name: Deploy mfe-home
+        run: |
+          aws s3 sync dist/mfe-home/ s3://${{ needs.infra.outputs.home_bucket }}/ \
+            --exclude "*.json" \
+            --cache-control "public,max-age=31536000,immutable" \
+            --delete --only-show-errors
+          aws s3 sync dist/mfe-home/ s3://${{ needs.infra.outputs.home_bucket }}/ \
+            --exclude "*" --include "*.json" \
+            --cache-control "no-cache,no-store,must-revalidate" \
+            --only-show-errors
+          echo "✓ mfe-home → s3://${{ needs.infra.outputs.home_bucket }}"
+
+      - name: Deploy mfe-game
+        run: |
+          aws s3 sync dist/mfe-game/ s3://${{ needs.infra.outputs.game_bucket }}/ \
+            --exclude "*.json" \
+            --cache-control "public,max-age=31536000,immutable" \
+            --delete --only-show-errors
+          aws s3 sync dist/mfe-game/ s3://${{ needs.infra.outputs.game_bucket }}/ \
+            --exclude "*" --include "*.json" \
+            --cache-control "no-cache,no-store,must-revalidate" \
+            --only-show-errors
+          echo "✓ mfe-game → s3://${{ needs.infra.outputs.game_bucket }}"
+
+      - name: Deploy mfe-leaderboard
+        run: |
+          aws s3 sync dist/mfe-leaderboard/ s3://${{ needs.infra.outputs.lb_bucket }}/ \
+            --exclude "*.json" \
+            --cache-control "public,max-age=31536000,immutable" \
+            --delete --only-show-errors
+          aws s3 sync dist/mfe-leaderboard/ s3://${{ needs.infra.outputs.lb_bucket }}/ \
+            --exclude "*" --include "*.json" \
+            --cache-control "no-cache,no-store,must-revalidate" \
+            --only-show-errors
+          echo "✓ mfe-leaderboard → s3://${{ needs.infra.outputs.lb_bucket }}"
+
+      # Invalidar cache de CloudFront para que los usuarios vean la versión nueva
+      - name: Invalidate CloudFront caches
+        run: |
+          for CF_ID in \
+            "${{ needs.infra.outputs.shell_cf }}" \
+            "${{ needs.infra.outputs.home_cf }}" \
+            "${{ needs.infra.outputs.game_cf }}" \
+            "${{ needs.infra.outputs.lb_cf }}"; do
+            aws cloudfront create-invalidation \
+              --distribution-id "$CF_ID" \
+              --paths "/*.json" "/index.html" "/ngsw.json" "/ngsw-worker.js"
+          done
+          echo "✓ Cache invalidado en todas las distribuciones"
+
+      - name: Deployment summary
+        run: |
+          echo ""
+          echo "══════════════════════════════════════════"
+          echo "  ✅ QuizArena Frontend desplegado"
+          echo "══════════════════════════════════════════"
+          echo ""
+          echo "  PWA (comparte esta URL):
+          echo "  ${{ needs.infra.outputs.shell_url }}"
+          echo ""
+          echo "  MFEs:"
+          echo "  home        → ${{ needs.infra.outputs.home_url }}"
+          echo "  game        → ${{ needs.infra.outputs.game_url }}"
+          echo "  leaderboard → ${{ needs.infra.outputs.lb_url }}"
+          echo ""
