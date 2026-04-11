@@ -1,8 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { WebSocketService } from '@qa/shared/websocket.service';
-import { GameStateService } from '@qa/shared/game-state.service';
+import { WebSocketService, GameStateService } from '@qa/shared';
 import { environment } from '../environments/environment';
 
 /**

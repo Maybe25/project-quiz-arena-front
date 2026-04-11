@@ -60,22 +60,6 @@
       "purpose": "maskable any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "assets/screenshots/home.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Pantalla de inicio"
-    },
-    {
-      "src": "assets/screenshots/game.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Partida en curso"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Crear sala",
