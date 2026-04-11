@@ -53,7 +53,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "serviceWorker": "projects/shell/src/ngsw-config.json",
               "fileReplacements": [
                 {
                   "replace": "projects/shell/src/environments/environment.ts",
