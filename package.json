@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start:shell":        "ng serve shell          --port 4200 --watch",
-    "start:mfe-home":     "ng serve mfe-home       --port 4201 --watch",
-    "start:mfe-game":     "ng serve mfe-game       --port 4202 --watch",
+    "start:shell": "ng serve shell          --port 4200 --watch",
+    "start:mfe-home": "ng serve mfe-home       --port 4201 --watch",
+    "start:mfe-game": "ng serve mfe-game       --port 4202 --watch",
     "start:mfe-leaderboard": "ng serve mfe-leaderboard --port 4203 --watch",
     "start:all": "concurrently \"npm run start:mfe-home\" \"npm run start:mfe-game\" \"npm run start:mfe-leaderboard\" \"npm run start:shell\"",
     "build:all": "ng build mfe-home && ng build mfe-game && ng build mfe-leaderboard && ng build shell",
     "lint": "ng lint"
   },
   "dependencies": {
+    "@angular-architects/native-federation": "^19.0.0",
     "@angular/animations": "^19.0.0",
     "@angular/common": "^19.0.0",
     "@angular/compiler": "^19.0.0",
@@ -21,7 +22,7 @@
     "@angular/platform-browser-dynamic": "^19.0.0",
     "@angular/router": "^19.0.0",
     "@angular/service-worker": "^19.0.0",
-    "@angular-architects/native-federation": "^19.0.0",
+    "es-module-shims": "^2.8.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
