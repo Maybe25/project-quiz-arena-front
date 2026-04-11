@@ -29,9 +29,11 @@
       </span>
     </div>
 
-    <!-- Timer bar -->
-    @if (state.currentRound()) {
-      <qa-timer-bar [timeLimitMs]="state.currentRound()!.timeLimitMs" />
+    <!-- Timer bar — recrear al cambiar de ronda para forzar reset del intervalo -->
+    @for (round of [state.currentRound()]; track round?.roundId) {
+      @if (round) {
+        <qa-timer-bar [timeLimitMs]="round.timeLimitMs" />
+      }
     }
   </div>
 
