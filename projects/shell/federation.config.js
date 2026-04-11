@@ -19,17 +19,15 @@ module.exports = withNativeFederation({
   shared: {
     ...shareAll({
       singleton: true,
-      strictVersion: true,
+      strictVersion: false,
       requiredVersion: 'auto',
-      includeSecondaries: false,
+      includeSecondaries: true,
     }),
   },
 
-  // Excluir sub-módulos de RxJS para reducir tamaño
   skip: [
     'rxjs/ajax',
     'rxjs/fetch',
     'rxjs/testing',
-    'rxjs/webSocket',
   ],
 });
