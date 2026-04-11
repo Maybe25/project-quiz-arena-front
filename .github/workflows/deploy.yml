@@ -198,7 +198,7 @@ jobs:
             "${{ needs.infra.outputs.lb_cf }}"; do
             aws cloudfront create-invalidation \
               --distribution-id "$CF_ID" \
-              --paths "/*.json" "/index.html" "/ngsw.json" "/ngsw-worker.js"
+              --paths "/*"
           done
           echo "✓ Cache invalidado en todas las distribuciones"
 
