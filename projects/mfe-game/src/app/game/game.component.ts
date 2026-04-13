@@ -32,6 +32,9 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   readonly showResult = signal(false);
+  readonly isReady    = signal(false);
+  readonly readyCount = signal(0);
+  readonly totalCount = signal(0);
   private sub!: Subscription;
 
   ngOnInit(): void {
@@ -44,8 +47,15 @@ export class GameComponent implements OnInit, OnDestroy {
         this.showResult.set(true);
       } else if (msg.type === 'ROUND_START') {
         this.showResult.set(false);
+        this.isReady.set(false);
+        this.readyCount.set(0);
+        this.totalCount.set(0);
       } else if (msg.type === 'GAME_END') {
         this.router.navigate(['/game/result']);
+      } else if (msg.type === 'PLAYERS_READY') {
+        const p = (msg as any).payload;
+        this.readyCount.set(p.readyCount ?? 0);
+        this.totalCount.set(p.totalCount ?? 0);
       }
     });
   }
@@ -59,6 +69,15 @@ export class GameComponent implements OnInit, OnDestroy {
       roomId:   this.state.room()!.roomId,
       roundId:  this.state.currentRound()!.roundId,
       answer:   index,
+    });
+  }
+
+  markReady(): void {
+    if (this.isReady()) return;
+    this.isReady.set(true);
+    this.ws.send('PLAYER_READY', {
+      roomId:      this.state.room()!.roomId,
+      roundNumber: this.state.currentRound()!.roundNumber,
     });
   }
 

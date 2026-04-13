@@ -11,6 +11,7 @@ export type Action =
   | 'LEAVE_ROOM'
   | 'START_GAME'
   | 'SUBMIT_ANSWER'
+  | 'PLAYER_READY'
   | 'GET_LEADERBOARD';
 
 // ─── Tipos de mensaje que el servidor ENVÍA al cliente ───────────────────────
@@ -23,6 +24,7 @@ export type MessageType =
   | 'ROUND_START'
   | 'ROUND_END'
   | 'GAME_END'
+  | 'PLAYERS_READY'
   | 'LEADERBOARD'
   | 'ERROR';
 
