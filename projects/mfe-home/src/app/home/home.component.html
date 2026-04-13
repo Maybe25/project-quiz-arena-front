@@ -36,12 +36,13 @@
     </div>
 
     <!-- Crear sala -->
-    <button class="btn-primary w-full py-4 text-base mb-5"
+    <button class="btn-primary w-full py-4 text-base mb-5 flex items-center justify-center gap-2"
       [disabled]="!canCreate() || isLoading()"
       (click)="createRoom()">
-      @if (isLoading()) {
-        <svg class="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/>
+      @if (isCreating()) {
+        <svg class="animate-spin w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10" stroke-opacity=".25"/>
+          <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
         </svg>
         Creando sala...
       } @else {
@@ -71,10 +72,18 @@
     </div>
 
     <!-- Unirse -->
-    <button class="btn-ghost w-full py-3 text-base mb-4"
+    <button class="btn-ghost w-full py-3 text-base mb-4 flex items-center justify-center gap-2"
       [disabled]="!canJoin() || isLoading()"
       (click)="joinRoom()">
-      → Unirse a la sala
+      @if (isJoining()) {
+        <svg class="animate-spin w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10" stroke-opacity=".25"/>
+          <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+        </svg>
+        Uniéndose...
+      } @else {
+        → Unirse a la sala
+      }
     </button>
 
     <!-- Error inline -->

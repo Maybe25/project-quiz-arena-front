@@ -32,35 +32,37 @@ export class HomeComponent {
   private readonly router = inject(Router);
 
   // ─── Form state ───────────────────────────────────────────────────────────
-  readonly username   = signal('');
-  readonly roomCode   = signal('');
-  readonly isLoading  = signal(false);
-  readonly errorMsg   = signal('');
+  readonly username    = signal('');
+  readonly roomCode    = signal('');
+  readonly isCreating  = signal(false);
+  readonly isJoining   = signal(false);
+  readonly errorMsg    = signal('');
 
-  readonly canCreate = computed(() => this.username().trim().length >= 2);
-  readonly canJoin   = computed(() =>
+  readonly isLoading  = computed(() => this.isCreating() || this.isJoining());
+  readonly canCreate  = computed(() => this.username().trim().length >= 2);
+  readonly canJoin    = computed(() =>
     this.username().trim().length >= 2 && this.roomCode().trim().length === 6
   );
 
   // ─── Acciones ─────────────────────────────────────────────────────────────
 
   createRoom(): void {
-    if (!this.canCreate()) return;
-    this.isLoading.set(true);
+    if (!this.canCreate() || this.isLoading()) return;
+    this.isCreating.set(true);
     this.errorMsg.set('');
     this.ws.send('CREATE_ROOM', { username: this.username().trim() });
-    this.listenForRoomEvent('ROOM_CREATED', '/game/lobby');
+    this.listenForRoomEvent('ROOM_CREATED', '/game/lobby', () => this.isCreating.set(false));
   }
 
   joinRoom(): void {
-    if (!this.canJoin()) return;
-    this.isLoading.set(true);
+    if (!this.canJoin() || this.isLoading()) return;
+    this.isJoining.set(true);
     this.errorMsg.set('');
     this.ws.send('JOIN_ROOM', {
       username: this.username().trim(),
       roomCode: this.roomCode().trim().toUpperCase(),
     });
-    this.listenForRoomEvent('ROOM_JOINED', '/game/lobby');
+    this.listenForRoomEvent('ROOM_JOINED', '/game/lobby', () => this.isJoining.set(false));
   }
 
   goToLeaderboard(): void {
@@ -73,24 +75,23 @@ export class HomeComponent {
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
 
-  private listenForRoomEvent(eventType: string, navigateTo: string): void {
+  private listenForRoomEvent(eventType: string, navigateTo: string, stopLoading: () => void): void {
     const sub = this.ws.messages.subscribe(msg => {
       if (msg.type === eventType) {
         sub.unsubscribe();
-        this.isLoading.set(false);
+        stopLoading();
         this.router.navigate([navigateTo]);
       } else if (msg.type === 'ERROR') {
         sub.unsubscribe();
-        this.isLoading.set(false);
+        stopLoading();
         this.errorMsg.set((msg.payload as { message: string }).message ?? 'Error desconocido');
       }
     });
 
-    // Timeout de 10s por si el servidor no responde
     setTimeout(() => {
       sub.unsubscribe();
       if (this.isLoading()) {
-        this.isLoading.set(false);
+        stopLoading();
         this.errorMsg.set('Sin respuesta del servidor. Inténtalo de nuevo.');
       }
     }, 10_000);
